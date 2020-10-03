@@ -392,7 +392,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   Text('${a.productCode}'),
                   Text('หน่วยเล็กสุด : ${a.productUnit}', style: TextStyle(color: Colors.blue), overflow: TextOverflow.ellipsis),
                   poDetail != null ?
-                  Text("ตามใบสั่งซื้อ - ${poDetail['po_code']} จำนวน ${poDetail['Num']}/${poDetail['po_punit']}", style: TextStyle(color: Colors.red))
+                    Text("ตามใบสั่งซื้อ - ${poDetail['po_code']} จำนวน ${poDetail['Num']}/${poDetail['po_punit']}", style: TextStyle(color: Colors.red))
                   : Text('ไม่มีคำสั่งซื้อ', style: TextStyle(color: Colors.red)),
                 ],
               ),
@@ -551,6 +551,12 @@ class _AddProductPageState extends State<AddProductPage> {
 
       request.fields['dateMFG'] = tempDateMFG.toString();
       request.fields['dateEXP'] = tempDateEXP.toString();
+
+      if(poDetail != null){
+        request.fields['poRefCode'] = poDetail['po_code'];
+        request.fields['poRefQty'] = poDetail['Num'];
+        request.fields['poRefUnit'] = poDetail['po_punit'];
+      }
 
       print(request.fields['runFile2']);
       /*print(request.files[0].filename);
