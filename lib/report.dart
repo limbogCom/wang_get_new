@@ -94,6 +94,9 @@ class _ReportPageState extends State<ReportPage> {
                 productAll[index].recevicProductUnitNew == null ?
                       Text('หน่วยย่อย : ${productAll[index].recevicTCqtySub} ${productAll[index].recevicProductUnit}', style: TextStyle(color: Colors.lightBlue))
                     : Text('หน่วยย่อย : ${productAll[index].recevicTCqtySub} ${productAll[index].recevicProductUnitNew}', style: TextStyle(color: Colors.lightBlue)),
+                productAll[index].recevicPoRefCode == null ?
+                      Text('ไม่มีคำสั่งซื้อ', style: TextStyle(color: Colors.red))
+                    : Text("ตามใบสั่งซื้อ - ${productAll[index].recevicPoRefCode} จำนวน ${productAll[index].recevicPoRefQty}/${productAll[index].recevicPoRefUnit}", style: TextStyle(color: Colors.red)),
               ],
             ),
             trailing: IconButton(
