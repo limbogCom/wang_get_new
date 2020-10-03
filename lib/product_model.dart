@@ -10,6 +10,9 @@ class Product{
   final String recevicEmp;
   final String recevicDateAdd;
   final String recevicDateEdit;
+  final String recevicPoRefCode;
+  final String recevicPoRefQty;
+  final String recevicPoRefUnit;
   final String recevicTCid;
   final String recevicTCidPro;
   final String recevicTCbarcode;
@@ -34,6 +37,9 @@ class Product{
     this.recevicEmp,
     this.recevicDateAdd,
     this.recevicDateEdit,
+    this.recevicPoRefCode,
+    this.recevicPoRefQty,
+    this.recevicPoRefUnit,
     this.recevicTCid,
     this.recevicTCidPro,
     this.recevicTCbarcode,
@@ -60,6 +66,9 @@ class Product{
       recevicEmp: json['WH_receiveBox_emp'],
       recevicDateAdd: json['WH_receiveBox_dateAdd'],
       recevicDateEdit: json['WH_receiveBox_dateEdit'],
+      recevicPoRefCode: json['WH_receiveBox_poRefCode'],
+      recevicPoRefQty: json['WH_receiveBox_poRefQty'],
+      recevicPoRefUnit: json['WH_receiveBox_poRefUnit'],
       recevicTCid: json['tc_id'],
       recevicTCidPro: json['WH_receiveBox_TC_idPro'],
       recevicTCbarcode: json['WH_receiveBox_TC_barcode'],
