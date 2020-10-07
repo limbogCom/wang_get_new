@@ -24,6 +24,8 @@ class Product{
   final String recevicProductCode;
   final String recevicProductCompany;
   final String recevicProductPic;
+  final String recevicProductFloorNo;
+  final String recevicProductShelves;
 
   Product({
     this.recevicId,
@@ -50,7 +52,9 @@ class Product{
     this.recevicProductName,
     this.recevicProductCode,
     this.recevicProductCompany,
-    this.recevicProductPic
+    this.recevicProductPic,
+    this.recevicProductFloorNo,
+    this.recevicProductShelves
   });
 
   factory Product.fromJson(Map<String, dynamic> json){
@@ -80,6 +84,8 @@ class Product{
       recevicProductCode: json['pcode'],
       recevicProductCompany: json['company'],
       recevicProductPic: json['pic'],
+      recevicProductFloorNo: json['floor_no'],
+      recevicProductShelves: json['Shelves'],
     );
   }
 
