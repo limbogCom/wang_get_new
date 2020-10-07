@@ -389,7 +389,13 @@ class _AddProductPageState extends State<AddProductPage> {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('${a.productCode}'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${a.productCode}'),
+                      Text('ชั้น ${a.productFloorNo} / shelf ${a.productShelves}', style: TextStyle(color: Colors.green),),
+                    ],
+                  ),
                   Text('หน่วยเล็กสุด : ${a.productUnit}', style: TextStyle(color: Colors.blue), overflow: TextOverflow.ellipsis),
                   poDetail != null ?
                     Text("ตามใบสั่งซื้อ - ${poDetail['po_code']} จำนวน ${poDetail['Num']}/${poDetail['po_punit']}", style: TextStyle(color: Colors.red))
