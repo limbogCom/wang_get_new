@@ -72,6 +72,7 @@ class _AddProductPageState extends State<AddProductPage> {
   TextEditingController typeUnit = TextEditingController();
   TextEditingController receiveDetail = TextEditingController();
   TextEditingController receiveLot = TextEditingController();
+  TextEditingController noProductRegis = TextEditingController();
 
   TextEditingController receiveDateEXP = TextEditingController();
   TextEditingController receiveDateMFG = TextEditingController();
@@ -551,6 +552,8 @@ class _AddProductPageState extends State<AddProductPage> {
       request.fields['unit2'] = _currentUnitID.toString();
       request.fields['unit2Val'] = _currentUnit;
       request.fields['lot'] = receiveLot.text;
+      request.fields['noProductRegis'] = noProductRegis.text;
+
 
       //request.fields['dateMFG'] = receiveDateMFG.text;
       //request.fields['dateEXP'] = receiveDateEXP.text;
@@ -800,16 +803,15 @@ class _AddProductPageState extends State<AddProductPage> {
                   child: Container(
                     padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                     child: TextFormField (
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
+                      keyboardType: TextInputType.text,
                       textAlign: TextAlign.start,
-                      controller: receiveDetail,
+                      controller: noProductRegis,
                       style: TextStyle (
                         fontSize: 18,
                         color: Colors.black,
                       ),
                       decoration: InputDecoration (
-                          labelText: 'เพิ่มเติม*',
+                          labelText: 'No.ทะเบียนยา',
                           labelStyle: TextStyle (
                             fontSize: (15),
                           )
@@ -822,7 +824,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   child: Container(
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: TextFormField (
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       textAlign: TextAlign.start,
                       controller: receiveLot,
                       style: TextStyle (
@@ -898,6 +900,32 @@ class _AddProductPageState extends State<AddProductPage> {
                         WhitelistingTextInputFormatter(RegExp(r'\d+|-|/')),
                         DateInputFormatter(),
                       ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    child: TextFormField (
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      textAlign: TextAlign.start,
+                      controller: receiveDetail,
+                      style: TextStyle (
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                      decoration: InputDecoration (
+                          labelText: 'เพิ่มเติม*',
+                          labelStyle: TextStyle (
+                            fontSize: (15),
+                          )
+                      ),
                     ),
                   ),
                 ),
