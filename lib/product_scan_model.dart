@@ -9,6 +9,7 @@ class ProductScan{
   final String productUnit3;
   final String productFloorNo;
   final String productShelves;
+  final String productRegisNumber;
 
   ProductScan({
     this.productId,
@@ -20,7 +21,8 @@ class ProductScan{
     this.productUnit2,
     this.productUnit3,
     this.productFloorNo,
-    this.productShelves
+    this.productShelves,
+    this.productRegisNumber
   });
 
   factory ProductScan.fromJson(Map<String, dynamic> json){
@@ -35,6 +37,7 @@ class ProductScan{
       productUnit3: json['unit3'],
       productFloorNo: json['floor_no'],
       productShelves: json['Shelves'],
+      productRegisNumber: json['reg_no'],
     );
   }
 
