@@ -401,6 +401,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   poDetail != null ?
                     Text("ตามใบสั่งซื้อ - ${poDetail['po_code']} จำนวน ${poDetail['Num']}/${poDetail['po_punit']}", style: TextStyle(color: Colors.red))
                   : Text('ไม่มีคำสั่งซื้อ', style: TextStyle(color: Colors.red)),
+                  Text('No.ทะเบียนยา : ${a.productRegisNumber} ', style: TextStyle(color: Colors.purple),),
                 ],
               ),
               /*trailing: IconButton(
@@ -568,6 +569,7 @@ class _AddProductPageState extends State<AddProductPage> {
       }
 
       print(request.fields['runFile2']);
+      print(request.fields['noProductRegis']);
       /*print(request.files[0].filename);
       print(request.files[0].length);
       print(request.files[1].filename);
@@ -702,11 +704,13 @@ class _AddProductPageState extends State<AddProductPage> {
                       :IconButton(
                         padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                         icon: Icon(Icons.add_circle, size: 50, color: Colors.green,),
-                        onPressed: (){
-                          _addReceiveProduct();
+                        onPressed: () async {
+                          setState(() => loadingAdd = true);
+                          await _addReceiveProduct();
+                          setState(() => loadingAdd = false);
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                         }
-                  ),
+                      ),
                 ),
               ],
             ),
