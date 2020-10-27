@@ -73,6 +73,13 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Text("ระบบรับสินค้า"),
+        actions: <Widget>[
+
+        ],
+      ),
       body: isLoading ? CircularProgressIndicator()
           :ListView.builder(
         controller: _scrollController,
