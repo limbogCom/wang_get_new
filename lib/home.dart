@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wang_get/add_product.dart';
 import 'package:wang_get/report.dart';
 import 'package:wang_get/user.dart';
+import 'package:flutter/services.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,6 +25,11 @@ class _HomeState extends State<Home> {
       username = prefs.getString("empCodeReceive");
     });
     return username;
+  }
+
+  _clearSharedPrefer() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.clear();
   }
 
   @override
@@ -71,8 +77,61 @@ class _HomeState extends State<Home> {
 
         ],
       ),
-      body: pages[currentIndex],
-      bottomNavigationBar: bottomNavBar,
+      body: AddProductPage(),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text("รหัสพนักงาน-$username",
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(color: Colors.black, offset: Offset(1, 2), blurRadius: 2)
+                      ]
+                  )
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.view_list),
+              title: Text("รายงาน"),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ReportPage()));
+              }
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            ListTile(
+                leading: Icon(Icons.close),
+                title: Text("ออกจากระบบ", style: TextStyle(color: Colors.red),),
+                onTap: (){
+                  _clearSharedPrefer();
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                }
+            ),
+          ],
+        ),
+      ),
+      /*bottomNavigationBar: Container(
+        child: MaterialButton(
+          color: Colors.green,
+          textColor: Colors.white,
+          minWidth: double.infinity,
+          height: 50,
+          child: Text(
+            "OK",
+            style: new TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+            ),
+          ),
+          //onPressed: (){Navigator.pushReplacementNamed(context, '/Home');},
+          onPressed: () {
+          },
+        ),
+      ),*/
     );
   }
 }
