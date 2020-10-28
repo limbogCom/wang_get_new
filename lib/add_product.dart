@@ -379,7 +379,7 @@ class _AddProductPageState extends State<AddProductPage> {
           shrinkWrap:true,
           itemCount: _product.length,
           itemBuilder: (context, i){
-            final a = _product[i];
+            final a = _product[0];
             return ListTile(
               contentPadding: EdgeInsets.fromLTRB(10, 1, 10, 1),
               onTap: (){
