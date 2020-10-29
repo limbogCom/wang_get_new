@@ -472,7 +472,8 @@ class _AddProductPageState extends State<AddProductPage> {
         && _product != []
         && boxAmount.text != null
         && unitAmount.text != null
-        && _currentUnitID != null) {
+        && _currentUnitID != null
+        && _currentUnit != null) {
       var uri = Uri.parse("https://wangpharma.com/API/addReceiveProduct.php");
       var request = http.MultipartRequest("POST", uri);
 
