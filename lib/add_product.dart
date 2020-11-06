@@ -693,6 +693,10 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.auto_awesome_mosaic, size: 40),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+        ),
         backgroundColor: Colors.blue,
         title: Text("ระบบรับสินค้า-$username"),
         actions: <Widget>[
