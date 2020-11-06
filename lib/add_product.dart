@@ -33,6 +33,8 @@ class AddProductPage extends StatefulWidget {
 
 class _AddProductPageState extends State<AddProductPage> {
 
+  var username;
+
   List units = [];
   List unitsID = [];
   String _currentUnit;
@@ -78,6 +80,14 @@ class _AddProductPageState extends State<AddProductPage> {
   TextEditingController receiveDateMFG = TextEditingController();
 
   var poDetail;
+
+  getCodeEmpReceive() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString("empCodeReceive");
+    });
+    return username;
+  }
 
   _getUiitProduct() async{
     final res = await http.get('https://wangpharma.com/API/receiveProduct.php?act=$act');
@@ -141,12 +151,24 @@ class _AddProductPageState extends State<AddProductPage> {
     }
 
     if(imageFileC == null){
-      return Image (
-        image: AssetImage ( "assets/photo_default_2.png" ), width: 90, height: 90,
+      return GestureDetector(
+        onTap: () {
+          _openCamera(camPosition);
+        },
+        child: Image (
+          image: AssetImage ( "assets/photo_default_2.png" ), width: 90, height: 90,
+        ),
       );
     }else{
       return GestureDetector(
         onTap: () {
+          _openCamera(camPosition);
+          /*print("open img.");
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ImageDetailPage(imageFile: imageFileC)));*/
+        },
+        onLongPress: (){
           print("open img.");
           Navigator.push(
               context,
@@ -578,6 +600,13 @@ class _AddProductPageState extends State<AddProductPage> {
       print(request.files[2].filename);
       print(request.files[2].length);*/
 
+      print(request.fields['idPro2']);
+      print(request.fields['bcode2']);
+      print(request.fields['runQ2']);
+      print(request.fields['runQs2']);
+      print(request.fields['unit2']);
+      print(request.fields['unit2Val']);
+
       var response = await request.send();
 
       if (response.statusCode == 200) {
@@ -648,6 +677,7 @@ class _AddProductPageState extends State<AddProductPage> {
   void initState(){
     super.initState();
     //_getUiitProduct();
+    getCodeEmpReceive();
 
     _soundId = _loadSound();
     //getPoDetail('23011201');
@@ -661,48 +691,70 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                  child: IconButton(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      icon: Icon(Icons.settings_overscan, size: 50, color: Colors.red,),
-                      onPressed: (){
-                        scanBarcode();
-                        //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                      }
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(25, 0, 10, 0),
-                    child: TextField (
-                      controller: barcodeProduct,
-                      onChanged: onSearch,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration (
-                          labelText: 'Barcode / Code สินค้า',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
-                      ),
-                      keyboardType: TextInputType.text,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Text("ระบบรับสินค้า-$username"),
+        actions: <Widget>[
+          Container(
+            //color: Colors.lightGreen,
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: loadingAdd ? CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),)
+                :IconButton(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  icon: Icon(Icons.add_circle, size: 50, color: Colors.white,),
+                  onPressed: () async {
+                    setState(() => loadingAdd = true);
+                    await _addReceiveProduct();
+                    setState(() => loadingAdd = false);
+                    //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                }
+            ),
+          )
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: IconButton(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        icon: Icon(Icons.settings_overscan, size: 50, color: Colors.red,),
+                        onPressed: (){
+                          scanBarcode();
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                        }
                     ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
-                  child: loadingAdd ? CircularProgressIndicator()
-                      :IconButton(
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(25, 0, 10, 0),
+                      child: TextField (
+                        controller: barcodeProduct,
+                        onChanged: onSearch,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'Barcode / Code สินค้า',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        keyboardType: TextInputType.text,
+                      ),
+                    ),
+                  ),
+                  /*Container(
+                    padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                    child: loadingAdd ? CircularProgressIndicator()
+                        :IconButton(
                         padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                         icon: Icon(Icons.add_circle, size: 50, color: Colors.green,),
                         onPressed: () async {
@@ -711,307 +763,308 @@ class _AddProductPageState extends State<AddProductPage> {
                           setState(() => loadingAdd = false);
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                         }
-                      ),
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                    child: Container(
-                      color: Colors.lightBlue,
-                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Text('รายละเอียดสินค้า', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
-                    )
-                )
-              ],
-            ),
-            _getProductInfo(),
-            Divider(
-              color: Colors.black,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: TextFormField (
-                      textAlign: TextAlign.center,
-                      controller: boxAmount,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration (
-                          labelText: 'จำนวนลัง',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
-                      ),
-                      keyboardType: TextInputType.number,
                     ),
-                  ),
-                ),
-                Text(" / ลัง", style: TextStyle(fontSize: 18)),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                    child: TextFormField (
-                      textAlign: TextAlign.center,
-                      controller: unitAmount,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration (
-                          labelText: 'จำนวนหน่วย',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ),
-                Text("/", style: TextStyle(fontSize: 18)),
-                Expanded(
+                  ),*/
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Container(
+                        color: Colors.lightBlue,
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text('รายละเอียดสินค้า', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
+                      )
+                  )
+                ],
+              ),
+              _getProductInfo(),
+              Divider(
+                color: Colors.black,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
                     flex: 2,
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                      child: DropdownButton(
-                        hint: Text("หน่วยสินค้า",style: TextStyle(fontSize: 16)),
-                        items: units.map((dropDownStringItem){
-                          return DropdownMenuItem<String>(
-                            value: dropDownStringItem,
-                            child: Text(dropDownStringItem, style: TextStyle(fontSize: 16)),
-                          );
-                        }).toList(),
-                        onChanged: (newValueSelected){
-                          var tempIndex = units.indexOf(newValueSelected);
-                          _onDropDownItemSelected(newValueSelected);
-                          _currentUnitID = unitsID[tempIndex];
-                          print(this._currentUnit);
-                          print(_currentUnitID);
-                        },
-                        value: _currentUnit,
-                      ),
-                    )
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: TextFormField (
-                      keyboardType: TextInputType.text,
-                      textAlign: TextAlign.start,
-                      controller: noProductRegis,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration (
-                          labelText: 'No.ทะเบียนยา',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TextFormField (
+                        textAlign: TextAlign.center,
+                        controller: boxAmount,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'จำนวนลัง',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        keyboardType: TextInputType.number,
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: TextFormField (
-                      keyboardType: TextInputType.text,
-                      textAlign: TextAlign.start,
-                      controller: receiveLot,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration (
-                          labelText: 'Lot สินค้า',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
+                  Text(" / ลัง", style: TextStyle(fontSize: 18)),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                      child: TextFormField (
+                        textAlign: TextAlign.center,
+                        controller: unitAmount,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'จำนวนหน่วย',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        keyboardType: TextInputType.number,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: TextFormField (
-                      /*onTap: (){
+                  Text("/", style: TextStyle(fontSize: 18)),
+                  Expanded(
+                      flex: 2,
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                        child: DropdownButton(
+                          hint: Text("หน่วยสินค้า",style: TextStyle(fontSize: 16)),
+                          items: units.map((dropDownStringItem){
+                            return DropdownMenuItem<String>(
+                              value: dropDownStringItem,
+                              child: Text(dropDownStringItem, style: TextStyle(fontSize: 16)),
+                            );
+                          }).toList(),
+                          onChanged: (newValueSelected){
+                            var tempIndex = units.indexOf(newValueSelected);
+                            _onDropDownItemSelected(newValueSelected);
+                            _currentUnitID = unitsID[tempIndex];
+                            print(this._currentUnit);
+                            print(_currentUnitID);
+                          },
+                          value: _currentUnit,
+                        ),
+                      )
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TextFormField (
+                        keyboardType: TextInputType.text,
+                        textAlign: TextAlign.start,
+                        controller: noProductRegis,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'No.ทะเบียนยา',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: TextFormField (
+                        keyboardType: TextInputType.text,
+                        textAlign: TextAlign.start,
+                        controller: receiveLot,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'Lot สินค้า',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TextFormField (
+                        /*onTap: (){
                         _selectDateProduct(context,0);
                       },*/
-                      maxLines: null,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.start,
-                      controller: receiveDateMFG,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
+                        maxLines: null,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.start,
+                        controller: receiveDateMFG,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            hintText: 'dd/MM/yyyy',
+                            labelText: 'วันผลิต',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        inputFormatters: [
+                          WhitelistingTextInputFormatter(RegExp(r'\d+|-|/')),
+                          DateInputFormatter(),
+                        ],
                       ),
-                      decoration: InputDecoration (
-                          hintText: 'dd/MM/yyyy',
-                          labelText: 'วันผลิต',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
-                      ),
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter(RegExp(r'\d+|-|/')),
-                        DateInputFormatter(),
-                      ],
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: TextFormField (
-                      /*onTap: (){
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: TextFormField (
+                        /*onTap: (){
                         _selectDateProduct(context,1);
                       },*/
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.start,
-                      controller: receiveDateEXP,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.start,
+                        controller: receiveDateEXP,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            hintText: 'dd/MM/yyyy',
+                            labelText: 'วันหมดอายุ',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        inputFormatters: [
+                          WhitelistingTextInputFormatter(RegExp(r'\d+|-|/')),
+                          DateInputFormatter(),
+                        ],
                       ),
-                      decoration: InputDecoration (
-                          hintText: 'dd/MM/yyyy',
-                          labelText: 'วันหมดอายุ',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TextFormField (
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        textAlign: TextAlign.start,
+                        controller: receiveDetail,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'เพิ่มเติม*',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
                       ),
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter(RegExp(r'\d+|-|/')),
-                        DateInputFormatter(),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: <Widget>[
+                        Text("รูปวันหมดอายุ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        _decideImageView(1),
+                        /*IconButton(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            icon: Icon(Icons.camera_alt, size: 40,),
+                            onPressed: (){
+                              _openCamera(1);
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                            }
+                        ),*/
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child: TextFormField (
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      textAlign: TextAlign.start,
-                      controller: receiveDetail,
-                      style: TextStyle (
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration (
-                          labelText: 'เพิ่มเติม*',
-                          labelStyle: TextStyle (
-                            fontSize: (15),
-                          )
-                      ),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: <Widget>[
+                        Text("รูปราคาป้าย", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        _decideImageView(2),
+                        /*IconButton(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            icon: Icon(Icons.camera_alt, size: 40,),
+                            onPressed: (){
+                              _openCamera(2);
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                            }
+                        ),*/
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: <Widget>[
-                      Text("รูปวันหมดอายุ", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      _decideImageView(1),
-                      IconButton(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          icon: Icon(Icons.camera_alt, size: 40,),
-                          onPressed: (){
-                            _openCamera(1);
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                          }
-                      ),
-                    ],
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: <Widget>[
+                        Text("รูป LOT สินค้า", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        _decideImageView(3),
+                        /*IconButton(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            icon: Icon(Icons.camera_alt, size: 40,),
+                            onPressed: (){
+                              _openCamera(3);
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                            }
+                        ),*/
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: <Widget>[
-                      Text("รูปราคาป้าย", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      _decideImageView(2),
-                      IconButton(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          icon: Icon(Icons.camera_alt, size: 40,),
-                          onPressed: (){
-                            _openCamera(2);
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                          }
-                      ),
-                    ],
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: <Widget>[
+                        Text("รูปลังสินค้า", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        _decideImageView(4),
+                        /*IconButton(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            icon: Icon(Icons.camera_alt, size: 40,),
+                            onPressed: (){
+                              _openCamera(4);
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                            }
+                        ),*/
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: <Widget>[
-                      Text("รูป LOT สินค้า", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      _decideImageView(3),
-                      IconButton(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          icon: Icon(Icons.camera_alt, size: 40,),
-                          onPressed: (){
-                            _openCamera(3);
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                          }
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: <Widget>[
-                      Text("รูปลังสินค้า", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      _decideImageView(4),
-                      IconButton(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          icon: Icon(Icons.camera_alt, size: 40,),
-                          onPressed: (){
-                            _openCamera(4);
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
-                          }
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
