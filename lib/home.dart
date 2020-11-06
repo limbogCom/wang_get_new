@@ -70,13 +70,13 @@ class _HomeState extends State<Home> {
     );
 
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text("ระบบรับสินค้า-$username"),
         actions: <Widget>[
 
         ],
-      ),
+      ),*/
       body: AddProductPage(),
       drawer: Drawer(
         child: ListView(
