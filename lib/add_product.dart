@@ -79,6 +79,10 @@ class _AddProductPageState extends State<AddProductPage> {
   TextEditingController receiveDateEXP = TextEditingController();
   TextEditingController receiveDateMFG = TextEditingController();
 
+  TextEditingController productWidth = TextEditingController();
+  TextEditingController productLength = TextEditingController();
+  TextEditingController productHeight = TextEditingController();
+
   var poDetail;
 
   getCodeEmpReceive() async{
@@ -585,6 +589,10 @@ class _AddProductPageState extends State<AddProductPage> {
       request.fields['dateMFG'] = tempDateMFG.toString();
       request.fields['dateEXP'] = tempDateEXP.toString();
 
+      request.fields['productWidth'] = productWidth.text;
+      request.fields['productLength'] = productLength.text;
+      request.fields['productHeight'] = productHeight.text;
+
       if(poDetail != null){
         request.fields['poRefCode'] = poDetail['po_code'];
         request.fields['poRefQty'] = poDetail['Num'];
@@ -961,6 +969,73 @@ class _AddProductPageState extends State<AddProductPage> {
                           WhitelistingTextInputFormatter(RegExp(r'\d+|-|/')),
                           DateInputFormatter(),
                         ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TextFormField (
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.start,
+                        controller: productWidth,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'กว้าง cm',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: TextFormField (
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.start,
+                        controller: productLength,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'ยาว cm',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: TextFormField (
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.start,
+                        controller: productHeight,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'สูง cm',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
                       ),
                     ),
                   ),
