@@ -411,7 +411,17 @@ class _AddProductPageState extends State<AddProductPage> {
               onTap: (){
 
               },
-              leading: Image.network('https://www.wangpharma.com/cms/product/${a.productPic}', fit: BoxFit.cover, width: 70, height: 70),
+              leading: Container(
+                child: Stack(
+                  children: [
+                    Image.network('https://www.wangpharma.com/cms/product/${a.productPic}', fit: BoxFit.cover, width: 80, height: 80),
+                    a.productWidth == "0" ?
+                        Text('')
+                      : Text('W ${a.productWidth} x L ${a.productLength} x H ${a.productHeight}',
+                          style: TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold, backgroundColor: Colors.white)),
+                  ],
+                ),
+              ),
               title: Text('${a.productName}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
