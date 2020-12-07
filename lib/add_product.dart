@@ -20,6 +20,7 @@ import 'package:soundpool/soundpool.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:pattern_formatter/pattern_formatter.dart';
+import 'package:wang_get/shipping_company_model.dart';
 
 
 class AddProductPage extends StatefulWidget {
@@ -39,6 +40,10 @@ class _AddProductPageState extends State<AddProductPage> {
   List unitsID = [];
   String _currentUnit;
   var _currentUnitID;
+
+  List<ShippingCompany> shipCom = [];
+  List shipComID = [];
+  var _currentShipCom;
 
   DateTime _dateTime = DateTime.now();
 
@@ -118,9 +123,52 @@ class _AddProductPageState extends State<AddProductPage> {
     }
   }
 
+  _getShipCom(comCode) async{
+    final res = await http.get('https://wangpharma.com/API/receiveProduct.php?act=Shipping&comCode=$comCode');
+
+    if(res.statusCode == 200){
+
+      setState(() {
+
+        var jsonData = json.decode(res.body);
+
+        jsonData.forEach((shipComs) =>shipCom.add(ShippingCompany.fromJson(shipComs)));
+
+        /*setState(() {
+          if(_product[0].productUnit != null && _product[0].productUnit != ''){
+            unitsID.add(1);
+            units.add(_product[0].productUnit);
+          }
+          if(_product[0].productUnit2 != null && _product[0].productUnit2 != ''){
+            unitsID.add(2);
+            units.add(_product[0].productUnit2);
+          }
+          if(_product[0].productUnit3 != null && _product[0].productUnit3 != ''){
+            unitsID.add(3);
+            units.add(_product[0].productUnit3);
+          }
+        });*/
+
+        print(shipCom);
+        print(shipComID);
+        return shipCom;
+
+      });
+
+    }else{
+      throw Exception('Failed load Json');
+    }
+  }
+
   _onDropDownItemSelected(newValueSelected){
     setState(() {
       _currentUnit = newValueSelected;
+    });
+  }
+
+  _onDropDownShipComSelected(shipComValueSelected){
+    setState(() {
+      _currentShipCom = shipComValueSelected;
     });
   }
 
@@ -320,6 +368,8 @@ class _AddProductPageState extends State<AddProductPage> {
     units.clear();
     unitsID.clear();
 
+    shipCom.clear();
+
     //productAll = [];
 
     final res = await http.get('https://wangpharma.com/API/receiveProduct.php?SearchVal=$searchVal&act=Search');
@@ -351,6 +401,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
         setState(() {
           getPoDetail(_product[0].productCode);
+          _getShipCom(_product[0].productCompany);
         });
 
         print(poDetail);
@@ -591,6 +642,7 @@ class _AddProductPageState extends State<AddProductPage> {
       request.fields['unit2Val'] = _currentUnit;
       request.fields['lot'] = receiveLot.text;
       request.fields['noProductRegis'] = noProductRegis.text;
+      request.fields['shipComCodeVal'] = _currentShipCom.toString();
 
 
       //request.fields['dateMFG'] = receiveDateMFG.text;
@@ -624,6 +676,7 @@ class _AddProductPageState extends State<AddProductPage> {
       print(request.fields['runQs2']);
       print(request.fields['unit2']);
       print(request.fields['unit2Val']);
+      print(request.fields['shipComCodeVal']);
 
       var response = await request.send();
 
@@ -1054,7 +1107,7 @@ class _AddProductPageState extends State<AddProductPage> {
               Row(
                 children: [
                   Expanded(
-                    flex: 4,
+                    flex: 2,
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                       child: TextFormField (
@@ -1074,6 +1127,29 @@ class _AddProductPageState extends State<AddProductPage> {
                         ),
                       ),
                     ),
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                        child: DropdownButton(
+                          hint: Text("ขนส่ง",style: TextStyle(fontSize: 16)),
+                          items: shipCom.map((dropDownStringItemShip){
+                            return DropdownMenuItem<String>(
+                              value: dropDownStringItemShip.scShipCode,
+                              child: Text(dropDownStringItemShip.scShipName, style: TextStyle(fontSize: 16)),
+                            );
+                          }).toList(),
+                          onChanged: (shipComValueSelected){
+                            //var tempIndex = units.indexOf(newValueSelected);
+                            _onDropDownShipComSelected(shipComValueSelected);
+                            //_currentUnitID = unitsID[tempIndex];
+                            //print(this._currentUnit);
+                            //print(_currentUnitID);
+                          },
+                          value: _currentShipCom,
+                        ),
+                      )
                   ),
                 ],
               ),
