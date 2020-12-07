@@ -13,6 +13,7 @@ class ProductScan{
   final String productWidth;
   final String productLength;
   final String productHeight;
+  final String productCompany;
 
   ProductScan({
     this.productId,
@@ -28,7 +29,8 @@ class ProductScan{
     this.productRegisNumber,
     this.productWidth,
     this.productLength,
-    this.productHeight
+    this.productHeight,
+    this.productCompany
   });
 
   factory ProductScan.fromJson(Map<String, dynamic> json){
@@ -47,6 +49,7 @@ class ProductScan{
       productWidth: json['width'],
       productLength: json['length'],
       productHeight: json['height'],
+      productCompany: json['company'],
     );
   }
 
