@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -21,6 +22,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:pattern_formatter/pattern_formatter.dart';
 import 'package:wang_get/shipping_company_model.dart';
+import 'package:wang_get/shipping_model.dart';
 
 
 class AddProductPage extends StatefulWidget {
@@ -42,8 +44,12 @@ class _AddProductPageState extends State<AddProductPage> {
   var _currentUnitID;
 
   List<ShippingCompany> shipCom = [];
+  List<Shipping> shipComAll = [];
+  //AutoCompleteTextField _currentShipComAll;
+  //GlobalKey<AutoCompleteTextFieldState<Shipping>> key = GlobalKey();
   List shipComID = [];
   var _currentShipCom;
+
 
   DateTime _dateTime = DateTime.now();
 
@@ -87,6 +93,8 @@ class _AddProductPageState extends State<AddProductPage> {
   TextEditingController productWidth = TextEditingController();
   TextEditingController productLength = TextEditingController();
   TextEditingController productHeight = TextEditingController();
+
+  TextEditingController productShipCom = TextEditingController();
 
   var poDetail;
 
@@ -152,6 +160,28 @@ class _AddProductPageState extends State<AddProductPage> {
         print(shipCom);
         print(shipComID);
         return shipCom;
+
+      });
+
+    }else{
+      throw Exception('Failed load Json');
+    }
+  }
+
+  _getShipComAll() async{
+    final res = await http.get('https://wangpharma.com/API/receiveProduct.php?act=ShippingAll');
+
+    if(res.statusCode == 200){
+
+      setState(() {
+
+        var jsonData = json.decode(res.body);
+
+        jsonData.forEach((shipComAlls) =>shipComAll.add(Shipping.fromJson(shipComAlls)));
+
+        print(shipComAll);
+        print(shipComID);
+        return shipComAll;
 
       });
 
@@ -402,6 +432,7 @@ class _AddProductPageState extends State<AddProductPage> {
         setState(() {
           getPoDetail(_product[0].productCode);
           _getShipCom(_product[0].productCompany);
+          _getShipComAll();
         });
 
         print(poDetail);
@@ -1132,7 +1163,7 @@ class _AddProductPageState extends State<AddProductPage> {
                       flex: 2,
                       child: Container(
                         padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                        child: DropdownButton(
+                        /*child: DropdownButton(
                           hint: Text("ขนส่ง",style: TextStyle(fontSize: 16)),
                           items: shipCom.map((dropDownStringItemShip){
                             return DropdownMenuItem<String>(
@@ -1148,6 +1179,31 @@ class _AddProductPageState extends State<AddProductPage> {
                             //print(_currentUnitID);
                           },
                           value: _currentShipCom,
+                        ),*/
+                        child: AutoCompleteTextField<Shipping>(
+                            controller: productShipCom,
+                            clearOnSubmit: false,
+                            suggestions: shipComAll,
+                            decoration: InputDecoration(
+                                labelText: "ขนส่ง",
+                            ),
+                            itemFilter: (item, query){
+                              return item.shipComName.toLowerCase().startsWith(query.toLowerCase());
+                            },
+                            itemSorter: (a, b){
+                              return a.shipComName.compareTo(b.shipComName);
+                            },
+                            itemSubmitted: (item){
+                              //setState(() {
+                                productShipCom.text = item.shipComName;
+                                _currentShipCom = item.shipComCode;
+                              //});
+                              print(productShipCom.text);
+                              print(_currentShipCom);
+                            },
+                            itemBuilder: (context, item){
+                              return Text(item.shipComName);
+                            },
                         ),
                       )
                   ),
