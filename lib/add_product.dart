@@ -1202,7 +1202,7 @@ class _AddProductPageState extends State<AddProductPage> {
                               print(_currentShipCom);
                             },
                             itemBuilder: (context, item){
-                              return Text(item.shipComName);
+                              return Text(item.shipComName, style: TextStyle(color: Colors.green, fontSize: 16),);
                             },
                         ),
                       )
