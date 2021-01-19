@@ -203,16 +203,16 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   _openCamera(camPosition) async {
-      var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+      var picture = await ImagePicker().getImage(source: ImageSource.camera);
       this.setState((){
         if(camPosition == 1){
-          imageFile1 = picture;
+          imageFile1 = File(picture.path);
         }else if(camPosition == 2){
-          imageFile2 = picture;
+          imageFile2 = File(picture.path);
         }else if(camPosition == 3){
-          imageFile3 = picture;
+          imageFile3 = File(picture.path);
         }else{
-          imageFile4 = picture;
+          imageFile4 = File(picture.path);
         }
       });
       //Navigator.of(context).pop();
@@ -788,6 +788,22 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   void dispose() {
     // TODO: implement dispose
+    barcodeProduct.dispose();
+    boxAmount.dispose();
+    unitAmount.dispose();
+    typeUnit.dispose();
+    receiveDetail.dispose();
+    receiveLot.dispose();
+    noProductRegis.dispose();
+
+    receiveDateEXP.dispose();
+    receiveDateMFG.dispose();
+
+    productWidth.dispose();
+    productLength.dispose();
+    productHeight.dispose();
+
+    productShipCom.dispose();
     super.dispose();
   }
 
