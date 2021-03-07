@@ -23,6 +23,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pattern_formatter/pattern_formatter.dart';
 import 'package:wang_get/shipping_company_model.dart';
 import 'package:wang_get/shipping_model.dart';
+import 'package:wang_get/system_model.dart';
 
 
 class AddProductPage extends StatefulWidget {
@@ -80,6 +81,7 @@ class _AddProductPageState extends State<AddProductPage> {
   List<ProductScan> _search = [];
 
   TextEditingController barcodeProduct = TextEditingController();
+  TextEditingController barcodeProductNumber = TextEditingController();
   TextEditingController boxAmount = TextEditingController();
   TextEditingController unitAmount = TextEditingController();
   TextEditingController typeUnit = TextEditingController();
@@ -104,6 +106,59 @@ class _AddProductPageState extends State<AddProductPage> {
       username = prefs.getString("empCodeReceive");
     });
     return username;
+  }
+
+  var sysStatusVal = 'open';
+  List<SystemStatus> sysStatusValue = [];
+
+  getSystemStatus() async{
+
+    sysStatusValue.clear();
+
+    final res = await http.get('https://wangpharma.com/API/systemStatus.php');
+
+    if(res.statusCode == 200){
+
+      setState(() {
+
+        var jsonData = json.decode(res.body);
+
+        jsonData.forEach((sysStatusGet) => sysStatusValue.add(SystemStatus.fromJson(sysStatusGet)));
+
+        print(sysStatusValue[0].sysStatus);
+        sysStatusVal = sysStatusValue[0].sysStatus;
+
+      });
+
+      return sysStatusValue[0].sysStatus;
+
+
+    }else{
+      throw Exception('Failed load Json');
+    }
+
+  }
+
+  lockSysAlertDialog() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("ระบบ Lock"),
+          content: Text("กรุณาแก้ไขส่วนงานที่เกิดปัญหา"),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                print('Out');
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _getUiitProduct() async{
@@ -789,6 +844,7 @@ class _AddProductPageState extends State<AddProductPage> {
   void dispose() {
     // TODO: implement dispose
     barcodeProduct.dispose();
+    barcodeProductNumber.dispose();
     boxAmount.dispose();
     unitAmount.dispose();
     typeUnit.dispose();
@@ -826,9 +882,16 @@ class _AddProductPageState extends State<AddProductPage> {
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                   icon: Icon(Icons.add_circle, size: 50, color: Colors.white,),
                   onPressed: () async {
-                    setState(() => loadingAdd = true);
-                    await _addReceiveProduct();
-                    setState(() => loadingAdd = false);
+                      await getSystemStatus();
+
+                    if(sysStatusVal == 'lock'){
+                      lockSysAlertDialog();
+                    }else{
+                      setState(() => loadingAdd = true);
+                      await _addReceiveProduct();
+                      setState(() => loadingAdd = false);
+                    }
+
                     //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                 }
             ),
@@ -848,7 +911,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                         icon: Icon(Icons.settings_overscan, size: 50, color: Colors.red,),
                         onPressed: (){
-                          scanBarcode();
+                          //scanBarcode();
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                         }
                     ),
@@ -887,6 +950,41 @@ class _AddProductPageState extends State<AddProductPage> {
                         }
                     ),
                   ),*/
+                ],
+              ),
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: IconButton(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        icon: Icon(Icons.tag, size: 50, color: Colors.green,),
+                        onPressed: (){
+                          scanBarcode();
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
+                        }
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(25, 0, 10, 0),
+                      child: TextField (
+                        controller: barcodeProductNumber,
+                        onChanged: onSearch,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'Barcode / Code สินค้า (เฉพาะตัวเลข)',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               Row(
