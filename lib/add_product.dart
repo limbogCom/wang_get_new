@@ -640,7 +640,6 @@ class _AddProductPageState extends State<AddProductPage> {
 
     if(imageFile1 != null
         && imageFile2 != null
-        && imageFile3 != null
         && imageFile4 != null
         && _product != []
         && boxAmount.text != null
@@ -695,8 +694,8 @@ class _AddProductPageState extends State<AddProductPage> {
 
       //File resizeImageFile3 = await resizeImgFun(imageFile3);
 
-      imageBytes3 = imageFile3.readAsBytesSync();
-      String image3B64 = base64Encode(imageBytes3);
+      //imageBytes3 = imageFile3.readAsBytesSync();
+      //String image3B64 = base64Encode(imageBytes3);
 
       /*var stream3 = http.ByteStream(
           DelegatingStream.typed(resizeImageFile3.openRead()));
@@ -713,7 +712,7 @@ class _AddProductPageState extends State<AddProductPage> {
       //request.files.add(multipartFile3);
       request.fields['runFile2'] = image1B64;
       request.fields['runFile2ex'] = image2B64;
-      request.fields['runFile2priceTag'] = image3B64;
+      //request.fields['runFile2priceTag'] = image3B64;
       request.fields['runFile2box'] = image4B64;
 
 
@@ -911,7 +910,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                         icon: Icon(Icons.settings_overscan, size: 50, color: Colors.red,),
                         onPressed: (){
-                          //scanBarcode();
+                          scanBarcode();
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
                         }
                     ),
@@ -1073,7 +1072,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 ],
               ),
-              Row(
+              /*Row(
                 children: <Widget>[
                   Expanded(
                     flex: 2,
@@ -1322,7 +1321,7 @@ class _AddProductPageState extends State<AddProductPage> {
                       )
                   ),
                 ],
-              ),
+              ),*/
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
               ),
@@ -1362,7 +1361,7 @@ class _AddProductPageState extends State<AddProductPage> {
                       ],
                     ),
                   ),
-                  Expanded(
+                  /*Expanded(
                     flex: 2,
                     child: Column(
                       children: <Widget>[
@@ -1378,7 +1377,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         ),*/
                       ],
                     ),
-                  ),
+                  ),*/
                   Expanded(
                     flex: 2,
                     child: Column(
