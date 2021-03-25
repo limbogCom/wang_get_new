@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 
 import 'package:intl/intl.dart';
+import 'package:wang_get/product_model.dart';
 
 import 'package:wang_get/product_scan_model.dart';
 import 'package:wang_get/image_detail.dart';
@@ -439,6 +440,78 @@ class _AddProductPageState extends State<AddProductPage> {
     }
   }
 
+  List<Product> productRecent = [];
+
+  getProductRecent(idPro) async{
+
+    final res = await http.get('https://wangpharma.com/API/receiveProduct.php?idPro=$idPro&act=Recent');
+
+    if(res.statusCode == 200){
+
+      setState(() {
+        //isLoading = false;
+
+        var jsonData = json.decode(res.body);
+
+        jsonData.forEach((products) => productRecent.add(Product.fromJson(products)));
+
+        print(productRecent);
+
+        return productRecent;
+
+      });
+
+
+    }else{
+      throw Exception('Failed load Json');
+    }
+  }
+
+  _getProductRecentDetail(){
+
+    if(productRecent.isEmpty){
+      return Text('....');
+    }else{
+      return Container(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, int index){
+            return ListTile(
+              contentPadding: EdgeInsets.fromLTRB(10, 1, 10, 1),
+              onTap: (){
+                //Navigator.push(
+                //context,
+                //MaterialPageRoute(builder: (context) => ReportDetailPage(receiveProducts: productAll[index])));
+              },
+              leading: Image.network('https://www.wangpharma.com/cms/product/${productRecent[index].recevicProductPic}', fit: BoxFit.cover, width: 70, height: 70,),
+              title: Text('${productRecent[index].recevicProductName}', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('${productRecent[index].recevicProductCode}'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('ลัง : ${productRecent[index].recevicTCqtyBox}', style: TextStyle(color: Colors.red)),
+                      Text('เวลาที่รับ ${productRecent[index].recevicDateAdd}')
+                    ],
+                  ),
+                  productRecent[index].recevicProductUnitNew == null ?
+                  Text('หน่วยย่อย : ${productRecent[index].recevicTCqtySub} ${productRecent[index].recevicProductUnit}', style: TextStyle(color: Colors.lightBlue))
+                      : Text('หน่วยย่อย : ${productRecent[index].recevicTCqtySub} ${productRecent[index].recevicProductUnitNew}', style: TextStyle(color: Colors.lightBlue)),
+                  productRecent[index].recevicPoRefCode == null ?
+                  Text('ไม่มีคำสั่งซื้อ', style: TextStyle(color: Colors.red))
+                      : Text("ตามใบสั่งซื้อ - ${productRecent[index].recevicPoRefCode} จำนวน ${productRecent[index].recevicPoRefQty}/${productRecent[index].recevicPoRefUnit}", style: TextStyle(color: Colors.red)),
+                ],
+              ),
+            );
+          },
+          itemCount: productRecent != null ? productRecent.length : 0,
+        ),
+      );
+    }
+  }
+
   searchProduct(searchVal) async{
 
     //barcodeProduct.text = searchVal;
@@ -454,6 +527,8 @@ class _AddProductPageState extends State<AddProductPage> {
     unitsID.clear();
 
     shipCom.clear();
+
+    productRecent.clear();
 
     //productAll = [];
 
@@ -488,6 +563,8 @@ class _AddProductPageState extends State<AddProductPage> {
           getPoDetail(_product[0].productCode);
           _getShipCom(_product[0].productCompany);
           _getShipComAll();
+
+          getProductRecent(_product[0].productId);
         });
 
         print(poDetail);
@@ -589,6 +666,7 @@ class _AddProductPageState extends State<AddProductPage> {
       );
     }
   }
+
 
   resizeImgFun(imageFile){
 
@@ -769,29 +847,36 @@ class _AddProductPageState extends State<AddProductPage> {
 
         var respStr = await response.stream.bytesToString();
 
-        print("add OK");
         print(respStr);
-        showToastAddFast();
 
-        /*loadingAdd = false;
+        if(respStr == 'OK add DB'){
+          showToastAddFast();
 
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Home()));*/
+          /*loadingAdd = false;
 
-        setState(() {
-          loadingAdd = false;
-        });
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Home()));*/
 
-        Navigator.of(context).pushNamedAndRemoveUntil('/Home', (Route<dynamic> route) => false);
+          setState(() {
+            loadingAdd = false;
+          });
 
-         /*Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Home())).then((r){
-              setState(() {
-                loadingAdd = false;
-              });
-        });*/
+          Navigator.of(context).pushNamedAndRemoveUntil('/Home', (Route<dynamic> route) => false);
+
+          print("add OK");
+
+          /*Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Home())).then((r){
+                setState(() {
+                  loadingAdd = false;
+                });
+          });*/
+        }else{
+          _showAlertErrorAddDB();
+        }
+
 
       } else {
         print("add Error");
@@ -824,6 +909,19 @@ class _AddProductPageState extends State<AddProductPage> {
         return AlertDialog(
           title: Text('แจ้งเตือน'),
           content: Text('คุณกรอกรายละเอียดไม่ครบถ้วน'),
+        );
+      },
+    );
+  }
+
+  _showAlertErrorAddDB() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text('ไม่สามารถเพิ่มสินค้าเข้าระบบได้\nโปรดตรวจสอบรายละเอียดสินค้าในฐานข้อมูล'),
         );
       },
     );
@@ -1397,6 +1495,18 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 ],
               ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Container(
+                        color: Colors.deepOrange,
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text('สินค้าตัวเดียวกันที่เคยรับภายในวันนี้ล่าสุด', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
+                      )
+                  )
+                ],
+              ),
+              _getProductRecentDetail(),
             ],
           ),
         ),
