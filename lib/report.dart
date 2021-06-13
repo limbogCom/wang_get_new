@@ -97,7 +97,13 @@ class _ReportPageState extends State<ReportPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text('${productAll[index].recevicProductCode}'),
-                Text('ลัง : ${productAll[index].recevicTCqtyBox}', style: TextStyle(color: Colors.red),),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('ลัง : ${productAll[index].recevicTCqtyBox}', style: TextStyle(color: Colors.red),),
+                    Text('ชั้น ${productAll[index].recevicProductFloorNo} / shelf ${productAll[index].recevicProductShelves}', style: TextStyle(color: Colors.green),),
+                  ],
+                ),
                 productAll[index].recevicProductUnitNew == null ?
                       Text('หน่วยย่อย : ${productAll[index].recevicTCqtySub} ${productAll[index].recevicProductUnit}', style: TextStyle(color: Colors.lightBlue))
                     : Text('หน่วยย่อย : ${productAll[index].recevicTCqtySub} ${productAll[index].recevicProductUnitNew}', style: TextStyle(color: Colors.lightBlue)),
