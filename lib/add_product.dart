@@ -1278,7 +1278,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
                   ),
                 ],
-              ),
+              ),*/
               Row(
                 children: <Widget>[
                   Expanded(
@@ -1346,7 +1346,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 ],
               ),
-              Row(
+              /*Row(
                 children: [
                   Expanded(
                     flex: 2,
