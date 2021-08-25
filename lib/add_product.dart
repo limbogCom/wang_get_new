@@ -41,6 +41,7 @@ class _AddProductPageState extends State<AddProductPage> {
   var username;
 
   List units = [];
+  List unitsQty = [];
   List unitsID = [];
   String _currentUnit;
   var _currentUnitID;
@@ -85,6 +86,8 @@ class _AddProductPageState extends State<AddProductPage> {
   TextEditingController barcodeProductNumber = TextEditingController();
   TextEditingController boxAmount = TextEditingController();
   TextEditingController unitAmount = TextEditingController();
+  var unitAmountSum = 0;
+  List<TextEditingController> unitAmountAll = [];
   TextEditingController typeUnit = TextEditingController();
   TextEditingController receiveDetail = TextEditingController();
   TextEditingController receiveLot = TextEditingController();
@@ -524,6 +527,7 @@ class _AddProductPageState extends State<AddProductPage> {
     });
     _product.clear();
     units.clear();
+    unitsQty.clear();
     unitsID.clear();
 
     shipCom.clear();
@@ -548,14 +552,17 @@ class _AddProductPageState extends State<AddProductPage> {
           if(_product[0].productUnit != null && _product[0].productUnit != ''){
             unitsID.add(1);
             units.add(_product[0].productUnit);
+            unitsQty.add(_product[0].productUnitQty1);
           }
           if(_product[0].productUnit2 != null && _product[0].productUnit2 != ''){
             unitsID.add(2);
             units.add(_product[0].productUnit2);
+            unitsQty.add(_product[0].productUnitQty2);
           }
           if(_product[0].productUnit3 != null && _product[0].productUnit3 != ''){
             unitsID.add(3);
             units.add(_product[0].productUnit3);
+            unitsQty.add(_product[0].productUnitQty3);
           }
         });
 
@@ -647,10 +654,15 @@ class _AddProductPageState extends State<AddProductPage> {
                       Text('ชั้น ${a.productFloorNo} / shelf ${a.productShelves}', style: TextStyle(color: Colors.green),),
                     ],
                   ),
-                  Text('หน่วยเล็กสุด : ${a.productUnit}', style: TextStyle(color: Colors.blue), overflow: TextOverflow.ellipsis),
-                  poDetail != null ?
-                    Text("ตามใบสั่งซื้อ - ${poDetail['po_code']} จำนวน ${poDetail['Num']}/${poDetail['po_punit']}", style: TextStyle(color: Colors.red))
-                  : Text('ไม่มีคำสั่งซื้อ', style: TextStyle(color: Colors.red)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('หน่วยเล็กสุด : ${a.productUnit}', style: TextStyle(color: Colors.blue), overflow: TextOverflow.ellipsis),
+                      poDetail != null ?
+                      Text("ตามใบสั่งซื้อ - ${poDetail['po_code']} จำนวน ${poDetail['Num']}/${poDetail['po_punit']}", style: TextStyle(color: Colors.red))
+                          : Text('ไม่มีคำสั่งซื้อ', style: TextStyle(color: Colors.red)),
+                    ],
+                  ),
                   Text('No.ทะเบียนยา : ${a.productRegisNumber} ', style: TextStyle(color: Colors.purple),),
                 ],
               ),
@@ -660,6 +672,91 @@ class _AddProductPageState extends State<AddProductPage> {
                     //addToOrderFast(a);
                   }
               ),*/
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  _getUnitProduct(){
+
+    //if(units.isNotEmpty){
+      //units.map((item) {
+        //unitAmountAll[units.indexOf(item)] = new TextEditingController();
+      //}).toList();
+    //}
+
+
+    print(units.length);
+    for (var i = 0; i <= units.length; i++) {
+      unitAmountAll.add(TextEditingController());
+      print(i);
+    }
+
+    //units.asMap().forEach((i, value) {
+      //unitAmountAll[i] = new TextEditingController();
+    //});
+
+    if(!loading){
+      return Text('....');
+    }else{
+      return Container(
+        child: ListView.builder(
+          shrinkWrap:true,
+          itemCount: units.length,
+          itemBuilder: (context, i){
+            return ListTile(
+              visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+              contentPadding: EdgeInsets.fromLTRB(10, 1, 10, 1),
+              leading: Text('จำนวนหน่วยย่อย', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+              title: Container(
+                width: 120,
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: TextFormField (
+                  textAlign: TextAlign.center,
+                  controller: unitAmountAll[i],
+                  style: TextStyle (
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (text){
+                    unitAmountSum = 0;
+                    for (var i = 0; i <= units.length; i++) {
+                      //unitAmountSum = unitAmountSum + int.parse(text);
+                      if(unitAmountAll[i].text.isNotEmpty){
+                        setState(() {
+                          //print(unitsQty[0]);
+                          var unitQtyAmountSum;
+                          unitQtyAmountSum = (int.parse(unitsQty[0]) / int.parse(unitsQty[i])) * int.parse(unitAmountAll[i].text);
+                          //print(unitQtyAmountSum.toInt());
+                          unitAmountSum = unitAmountSum + unitQtyAmountSum.toInt();
+                          //print(unitAmountSum);
+                          _currentUnitID = unitsID[0];
+                          _currentUnit = units[0];
+                          unitAmount.text = unitAmountSum.toString();
+                        });
+                      }
+
+                    }
+
+                    print(unitAmount.text);
+                    print(_currentUnitID);
+                    print(_currentUnit);
+
+                    //for (var i = 1; i <= units.length; i++) {
+                      //unitAmountSum = unitAmountSum + int.parse(text);
+                      //print(unitAmountSum);
+                    //}
+
+                  },
+                ),
+              ),
+              trailing: Container(
+                width: 100,
+                child: Text('/ ${units[i]}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+              )
             );
           },
         ),
@@ -1006,7 +1103,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     child: IconButton(
                         padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        icon: Icon(Icons.settings_overscan, size: 50, color: Colors.red,),
+                        icon: Icon(Icons.aspect_ratio, size: 50, color: Colors.red,),
                         onPressed: (){
                           scanBarcode();
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPage()));
@@ -1049,7 +1146,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),*/
                 ],
               ),
-              Row(
+              /*Row(
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
@@ -1083,7 +1180,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
                   ),
                 ],
-              ),
+              ),*/
               Row(
                 children: <Widget>[
                   Expanded(
@@ -1102,6 +1199,24 @@ class _AddProductPageState extends State<AddProductPage> {
               Row(
                 children: <Widget>[
                   Expanded(
+                      child: Container(
+                        color: Colors.green,
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text('จำนวนที่รับ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
+                      )
+                  )
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: Text("จำนวนลัง", style: TextStyle(fontSize: 18)),
+                    )
+                  ),
+                  Expanded(
                     flex: 2,
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
@@ -1112,17 +1227,44 @@ class _AddProductPageState extends State<AddProductPage> {
                           fontSize: 18,
                           color: Colors.black,
                         ),
-                        decoration: InputDecoration (
+                        /*decoration: InputDecoration (
                             labelText: 'จำนวนลัง',
                             labelStyle: TextStyle (
                               fontSize: (15),
                             )
-                        ),
+                        ),*/
                         keyboardType: TextInputType.number,
                       ),
                     ),
                   ),
-                  Text(" / ลัง", style: TextStyle(fontSize: 18)),
+                  Expanded(
+                    flex: 1,
+                    child: Text(" / ลัง", style: TextStyle(fontSize: 18)),
+                  ),
+                ],
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Container(
+                        color: Colors.deepOrange,
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text('รวมหน่วยเล็กสุด ${unitAmountSum} ${(units.isNotEmpty)?units[0]:''}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
+                      )
+                  )
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(child: _getUnitProduct(),)
+                ],
+              ),
+              /*Row(
+                children: [
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -1135,7 +1277,7 @@ class _AddProductPageState extends State<AddProductPage> {
                           color: Colors.black,
                         ),
                         decoration: InputDecoration (
-                            labelText: 'จำนวนหน่วย',
+                            labelText: 'จำนวนหน่วยย่อย',
                             labelStyle: TextStyle (
                               fontSize: (15),
                             )
@@ -1145,7 +1287,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
                   ),
                   Text("/", style: TextStyle(fontSize: 18)),
-                  Expanded(
+                  /*Expanded(
                       flex: 2,
                       child: Container(
                         padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -1167,9 +1309,13 @@ class _AddProductPageState extends State<AddProductPage> {
                           value: _currentUnit,
                         ),
                       )
+                  ),*/
+                  Expanded(
+                    flex: 2,
+                      child: Text("หลอด", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                   ),
                 ],
-              ),
+              ),*/
               /*Row(
                 children: <Widget>[
                   Expanded(
@@ -1279,6 +1425,17 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 ],
               ),*/
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Container(
+                        color: Colors.green,
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text('ขนาดสินค้า', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
+                      )
+                  )
+                ],
+              ),
               Row(
                 children: <Widget>[
                   Expanded(
