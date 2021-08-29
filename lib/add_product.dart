@@ -1316,7 +1316,18 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 ],
               ),*/
-              /*Row(
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Container(
+                        color: Colors.green,
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text('ข้อมูลวันผลิตและหมดอายุ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,),
+                      )
+                  )
+                ],
+              ),
+              Row(
                 children: <Widget>[
                   Expanded(
                     flex: 2,
@@ -1424,7 +1435,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
                   ),
                 ],
-              ),*/
+              ),
               Row(
                 children: <Widget>[
                   Expanded(
