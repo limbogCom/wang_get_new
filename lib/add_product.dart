@@ -100,6 +100,8 @@ class _AddProductPageState extends State<AddProductPage> {
   TextEditingController productLength = TextEditingController();
   TextEditingController productHeight = TextEditingController();
 
+  TextEditingController productWeight = TextEditingController();
+
   TextEditingController productShipCom = TextEditingController();
 
   var poDetail;
@@ -915,6 +917,8 @@ class _AddProductPageState extends State<AddProductPage> {
       request.fields['productLength'] = productLength.text;
       request.fields['productHeight'] = productHeight.text;
 
+      request.fields['productWeight'] = productWeight.text;
+
       if(poDetail != null){
         request.fields['poRefCode'] = poDetail['po_code'];
         request.fields['poRefQty'] = poDetail['Num'];
@@ -1052,6 +1056,8 @@ class _AddProductPageState extends State<AddProductPage> {
     productWidth.dispose();
     productLength.dispose();
     productHeight.dispose();
+
+    productWeight.dispose();
 
     productShipCom.dispose();
     super.dispose();
@@ -1210,13 +1216,6 @@ class _AddProductPageState extends State<AddProductPage> {
               Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Text("จำนวนลัง", style: TextStyle(fontSize: 18)),
-                    )
-                  ),
-                  Expanded(
                     flex: 2,
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
@@ -1227,12 +1226,12 @@ class _AddProductPageState extends State<AddProductPage> {
                           fontSize: 18,
                           color: Colors.black,
                         ),
-                        /*decoration: InputDecoration (
+                        decoration: InputDecoration (
                             labelText: 'จำนวนลัง',
                             labelStyle: TextStyle (
                               fontSize: (15),
                             )
-                        ),*/
+                        ),
                         keyboardType: TextInputType.number,
                       ),
                     ),
@@ -1240,6 +1239,31 @@ class _AddProductPageState extends State<AddProductPage> {
                   Expanded(
                     flex: 1,
                     child: Text(" / ลัง", style: TextStyle(fontSize: 18)),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TextFormField (
+                        textAlign: TextAlign.center,
+                        controller: productWeight,
+                        style: TextStyle (
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration (
+                            labelText: 'น้ำหนักต่อชิ้น',
+                            labelStyle: TextStyle (
+                              fontSize: (15),
+                            )
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(" / กรัม", style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),
