@@ -1263,7 +1263,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text(" / กรัม", style: TextStyle(fontSize: 18)),
+                    child: Text(" / กก.", style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),
