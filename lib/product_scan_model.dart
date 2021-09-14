@@ -17,6 +17,7 @@ class ProductScan{
   final String productLength;
   final String productHeight;
   final String productCompany;
+  final String productWeight;
 
   ProductScan({
     this.productId,
@@ -36,7 +37,8 @@ class ProductScan{
     this.productWidth,
     this.productLength,
     this.productHeight,
-    this.productCompany
+    this.productCompany,
+    this.productWeight
   });
 
   factory ProductScan.fromJson(Map<String, dynamic> json){
@@ -59,6 +61,7 @@ class ProductScan{
       productLength: json['length'],
       productHeight: json['height'],
       productCompany: json['company'],
+      productWeight: json['productWeight'],
     );
   }
 
