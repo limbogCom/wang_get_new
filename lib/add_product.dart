@@ -637,11 +637,18 @@ class _AddProductPageState extends State<AddProductPage> {
               leading: Container(
                 child: Stack(
                   children: [
-                    Image.network('https://www.wangpharma.com/cms/product/${a.productPic}', fit: BoxFit.cover, width: 80, height: 80),
+                    Image.network('https://www.wangpharma.com/cms/product/${a.productPic}', fit: BoxFit.cover, width: 100, height: 100),
                     a.productWidth == "0" ?
                         Text('')
-                      : Text('W ${a.productWidth} x L ${a.productLength} x H ${a.productHeight}',
+                      : Text('W ${a.productWidth.replaceAll(".0000", "")} x L ${a.productLength.replaceAll(".0000", "")} x H ${a.productHeight.replaceAll(".0000", "")}',
                           style: TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold, backgroundColor: Colors.white)),
+                    a.productWeight == "0" ?
+                        Text('')
+                      : Positioned(
+                          top: 40,
+                          child: Text('น้ำหนัก ${a.productWeight.replaceAll(".0000", "")}',
+                              style: TextStyle(fontSize: 11, color: Colors.green, fontWeight: FontWeight.bold, backgroundColor: Colors.white)),
+                        ),
                   ],
                 ),
               ),
