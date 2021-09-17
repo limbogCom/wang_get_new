@@ -574,7 +574,15 @@ class _AddProductPageState extends State<AddProductPage> {
           _getShipComAll();
 
           getProductRecent(_product[0].productId);
+
+          if(_product[0].productWeight != "0"){
+            productWeight.text = _product[0].productWeight.toString().replaceAll(".0000", "");
+          }else{
+            productWeight.text = "";
+          }
+
         });
+
 
         print(poDetail);
 
@@ -642,13 +650,13 @@ class _AddProductPageState extends State<AddProductPage> {
                         Text('')
                       : Text('W ${a.productWidth.replaceAll(".0000", "")} x L ${a.productLength.replaceAll(".0000", "")} x H ${a.productHeight.replaceAll(".0000", "")}',
                           style: TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold, backgroundColor: Colors.white)),
-                    a.productWeight == "0" ?
+                    /*a.productWeight == "0" ?
                         Text('')
                       : Positioned(
                           top: 40,
                           child: Text('น้ำหนัก ${a.productWeight.replaceAll(".0000", "")}',
                               style: TextStyle(fontSize: 11, color: Colors.green, fontWeight: FontWeight.bold, backgroundColor: Colors.white)),
-                        ),
+                        ),*/
                   ],
                 ),
               ),
